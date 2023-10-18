@@ -1,0 +1,81 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.1.4'
+    id 'io.spring.dependency-management' version '1.1.3'
+}
+
+group = 'com.lovely-4k'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+// 루트 프로젝트는 jar 파일을 만들 필요가 없기 때문에 false로 설정
+bootJar {
+    enabled = false
+}
+
+subprojects {
+    group = 'com.lovely4k'
+    version = '0.0.1-SNAPSHOT'
+
+    java {
+        sourceCompatibility = '17'
+    }
+
+    /* 아래서 user모듈이 common 모듈에 의존하게 했는데
+             이는 common 모듈의 코드를 의존한다는 common 모듈이
+             갖고 있는 라이브러리를 의존한다는 의미가 아니다. 따라서
+             common 모듈이 갖고 있는 라이브러리도 의존하게 하고 싶다면 플러그인을
+             적용하면 된다.*/
+
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    //ide에 코틀린 플러그인이 적용되어 있어 설정함
+    tasks.register("prepareKotlinBuildScriptModel") {}
+}
+
+// api 모듈은 common 모듈에 의존
+project(':api') {
+    dependencies {
+        implementation project(':common')
+    }
+}
+
+// model 모듈은 common 모듈에 의존
+project(':model') {
+    dependencies {
+        implementation project(':common')
+    }
+}
+
+// api 모듈은 model 모듈에 의존
+project(':api') {
+    dependencies {
+        implementation project(':model')
+    }
+}
