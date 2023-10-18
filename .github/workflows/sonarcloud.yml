@@ -50,11 +50,11 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()  # 실패 여부 상관없이 항상 실행~
         with:
-          files: build/test-results/test/TEST-*.xml
+          files: '**/build/test-results/**/*.xml'
 
       # https://github.com/mikepenz/action-junit-report
       - name: 테스트 코드 중 테스트 실패한 부분에 'PR check'로 자동 작성
         uses: mikepenz/action-junit-report@v3
         if: always()
         with:
-          report_paths: build/test-results/test/TEST-*.xml
+          report_paths: '**/build/test-results/**/*.xml'
